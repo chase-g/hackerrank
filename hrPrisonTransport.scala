@@ -7,20 +7,22 @@ object Solution {
 
       import scala.collection.mutable.Map
       private val trees: Map[Int, Set[Int]] = Map()
+      private var rank = 0
 
       def find(x: Int, root: Int = 0): Option[Int] = {
         if (root < trees.size && trees(root).contains(x)) Some(root)
         else if (root < trees.size) find(x, root + 1)
         else None
       }
-      
+
       def add(x: Int): Unit = {
         val exists = find(x)
         if (exists == None) {
-          trees += (trees.size -> Set(x))
+          trees += (rank -> Set(x))
+          rank = trees.size
         }
       }
-      
+
       def union(x: Int, y: Int): Unit = {
         val xRoot = find(x).getOrElse(-1)
         val yRoot = find(y).getOrElse(-1)
@@ -29,17 +31,19 @@ object Solution {
           else if (xRoot < yRoot) {
             trees(xRoot) = trees(xRoot) ++ trees(yRoot)
             trees(yRoot) = Set()
+            rank = yRoot
           } else {
             trees(yRoot) = trees(yRoot) ++ trees(xRoot)
             trees(xRoot) = Set()
+            rank = xRoot
           }
         } else ()
       }
-      
+
       def show(): Unit = {
         println(trees)
       }
-      
+
       def rootSizes(): List[Int] = {
         val sizesList = (for {
           i <- 0 until trees.size
@@ -68,7 +72,7 @@ object Solution {
       val totalCost = groupCost + (number - roots.sum)
       println(totalCost.toInt)
     }
-    
+
     process()
     pickBuses()
   }
